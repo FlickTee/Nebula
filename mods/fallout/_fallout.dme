@@ -1,0 +1,20 @@
+#ifndef MODPACK_FALLOUT
+#define MODPACK_FALLOUT
+// BEGIN_INCLUDE
+#include "fallout.dm"
+#include "chargen\new_player.dm"
+#include "chargen\occupation.dm"
+#include "chargen\whitelist.dm"
+#include "clothing\armor.dm"
+#include "turfs\surface.dm"
+#include "pa\t45d.dm"
+
+// END_INCLUDE
+#endif
+// BEGIN_INTERNALS
+// END_INTERNALS
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+// BEGIN_PREFERENCES
+// END_PREFERENCES
