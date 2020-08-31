@@ -8,6 +8,7 @@
 #include "clothing\armor.dm"
 #include "turfs\surface.dm"
 #include "pa\t45d.dm"
+#include "mapping\map_marks.dm"
 
 // END_INCLUDE
 #endif
