@@ -75,6 +75,8 @@
 	var/mechanics_text
 	var/antag_text
 
+	var/affect_blood_on_ingest = TRUE
+
 	var/narcosis = 0 // Not a great word for it. Constant for causing mild confusion when ingested.
 	var/toxicity = 0 // Organ damage from ingestion.
 	var/toxicity_targets_organ // Bypass liver/kidneys when ingested, harm this organ directly (using BP_FOO defines).
@@ -110,7 +112,6 @@
 	var/explosion_resistance = 5 // Only used by walls currently.
 	var/conductive = 1           // Objects with this var add CONDUCTS to flags on spawn.
 	var/luminescence
-	var/list/alloy_materials     // If set, material can be produced via alloying these materials in these amounts.
 	var/wall_support_value = 30
 	var/sparse_material_weight
 	var/rich_material_weight
@@ -492,7 +493,8 @@
 		M.adjust_drugged(euphoriant, euphoriant_max)
 
 /decl/material/proc/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed, var/datum/reagents/holder)
-	affect_blood(M, alien, removed * 0.5, holder)
+	if(affect_blood_on_ingest)
+		affect_blood(M, alien, removed * 0.5, holder)
 
 /decl/material/proc/affect_touch(var/mob/living/carbon/M, var/alien, var/removed, var/datum/reagents/holder)
 

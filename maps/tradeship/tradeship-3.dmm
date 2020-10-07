@@ -2,10 +2,34 @@
 "aa" = (
 /turf/space,
 /area/space)
+"ab" = (
+/obj/machinery/door/blast/regular{
+	density = 0;
+	dir = 2;
+	icon_state = "pdoor0";
+	id_tag = "scraplock";
+	name = "External Blast Doors";
+	opacity = 0
+	},
+/turf/simulated/floor/airless,
+/area/ship/trade/bridge_unused)
 "ac" = (
 /obj/structure/lattice,
 /turf/space,
 /area/space)
+"ad" = (
+/obj/effect/wallframe_spawn/reinforced,
+/obj/machinery/door/firedoor,
+/obj/machinery/door/blast/regular{
+	density = 0;
+	dir = 2;
+	icon_state = "pdoor0";
+	id_tag = "scraplock";
+	name = "External Blast Doors";
+	opacity = 0
+	},
+/turf/simulated/floor/plating,
+/area/ship/trade/bridge_unused)
 "ae" = (
 /turf/simulated/floor/airless,
 /area/space)
@@ -282,10 +306,6 @@
 	},
 /turf/simulated/floor/bluegrid,
 /area/ship/trade/comms)
-"eX" = (
-/turf/space,
-/turf/simulated/open,
-/area/space)
 "fi" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 5
@@ -3229,8 +3249,8 @@ aa
 aa
 aa
 aa
-eX
-eX
+aa
+aa
 ax
 ax
 ax
@@ -3310,8 +3330,8 @@ aa
 aa
 aa
 aa
-eX
-eX
+aa
+aa
 ax
 ax
 ax
@@ -3392,7 +3412,7 @@ aa
 aa
 aa
 aa
-eX
+aa
 ax
 ax
 ax
@@ -4513,8 +4533,8 @@ aa
 aa
 aa
 aa
-Db
-jv
+ab
+ad
 mn
 hJ
 Dg
@@ -5605,8 +5625,8 @@ aa
 aa
 aa
 aa
-eX
-eX
+aa
+aa
 ax
 ax
 ax
@@ -5688,7 +5708,7 @@ aa
 aa
 aa
 aa
-eX
+aa
 ax
 ax
 ax
@@ -5770,8 +5790,8 @@ aa
 aa
 aa
 aa
-eX
-eX
+aa
+aa
 ax
 ax
 ax

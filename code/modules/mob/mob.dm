@@ -130,7 +130,7 @@
 // self_message (optional) is what the src mob hears.
 // deaf_message (optional) is what deaf people will see.
 // hearing_distance (optional) is the range, how many tiles away the message can be heard.
-/mob/audible_message(var/message, var/self_message, var/deaf_message, var/hearing_distance = world.view, var/checkghosts = null, var/narrate = FALSE)
+/mob/audible_message(var/message, var/self_message, var/deaf_message, var/hearing_distance = world.view, var/checkghosts = null, var/narrate = FALSE, var/radio_message)
 	var/turf/T = get_turf(src)
 	var/list/mobs = list()
 	var/list/objs = list()
@@ -147,14 +147,17 @@
 
 		if(self_message && M == src)
 			M.show_message(self_message, AUDIBLE_MESSAGE, deaf_message, VISIBLE_MESSAGE)
-		else if(M.see_invisible >= invisibility || narrate) // Cannot view the invisible
+		else if(is_invisible_to(M) || narrate) // Cannot view the invisible
 			M.show_message(mob_message, AUDIBLE_MESSAGE, deaf_message, VISIBLE_MESSAGE)
 		else
 			M.show_message(mob_message, AUDIBLE_MESSAGE)
 
 	for(var/o in objs)
 		var/obj/O = o
-		O.show_message(message, AUDIBLE_MESSAGE, deaf_message, VISIBLE_MESSAGE)
+		if(radio_message)
+			O.hear_talk(src, radio_message, null, decls_repository.get_decl(/decl/language/noise))
+		else
+			O.show_message(message, AUDIBLE_MESSAGE, deaf_message, VISIBLE_MESSAGE)
 
 /mob/proc/add_ghost_track(var/message, var/mob/observer/ghost/M)
 	ASSERT(istype(M))
@@ -188,31 +191,24 @@
 			return M
 	return 0
 
+#define ENCUMBERANCE_MOVEMENT_MOD 0.35
 /mob/proc/movement_delay()
 	. = 0
 	if(istype(loc, /turf))
 		var/turf/T = loc
 		. += T.movement_delay
-
 	if (drowsyness > 0)
 		. += 6
 	if(lying) //Crawling, it's slower
 		. += (8 + ((weakened * 3) + (confused * 2)))
-	. += move_intent.move_delay
-	. += encumbrance() * (0.5 + 1.5 * (SKILL_MAX - get_skill_value(SKILL_HAULING))/(SKILL_MAX - SKILL_MIN)) //Varies between 0.5 and 2, depending on skill
+	. += move_intent.move_delay + (ENCUMBERANCE_MOVEMENT_MOD * encumbrance())
+#undef ENCUMBERANCE_MOVEMENT_MOD
 
 /mob/proc/encumbrance()
 	for(var/obj/item/grab/G in get_active_grabs())
-		var/atom/movable/pulling = G.affecting
-		if(istype(pulling, /obj))
-			var/obj/O = pulling
-			. += between(0, O.w_class, ITEM_SIZE_GARGANTUAN) / 5
-		else if(istype(pulling, /mob))
-			var/mob/M = pulling
-			. += max(0, M.mob_size) / MOB_SIZE_MEDIUM
-		else
-			. += 1
+		. = max(., G.grab_slowdown())
 	. *= (0.8 ** size_strength_mod())
+	. *= (0.5 + 1.5 * (SKILL_MAX - get_skill_value(SKILL_HAULING))/(SKILL_MAX - SKILL_MIN))
 
 //Determines mob size/strength effects for slowdown purposes. Standard is 0; can be pos/neg.
 /mob/proc/size_strength_mod()
@@ -279,22 +275,25 @@
 	return
 
 /mob/proc/reset_view(atom/A)
-	if (client)
-		client.pixel_x = initial(client.pixel_x)
-		client.pixel_y = initial(client.pixel_y)
-		A = A ? A : eyeobj
-		if (istype(A, /atom/movable))
-			client.perspective = EYE_PERSPECTIVE
-			client.eye = A
-		else
-			if (isturf(loc))
-				client.eye = client.mob
-				client.perspective = MOB_PERSPECTIVE
-			else
-				client.perspective = EYE_PERSPECTIVE
-				client.eye = loc
-	return
-
+	set waitfor = 0
+	while(shakecamera && client && !QDELETED(src))
+		sleep(1)
+	if(!client || QDELETED(src))
+		return
+	client.default_pixel_x = initial(client.default_pixel_x)
+	client.default_pixel_y = initial(client.default_pixel_y)
+	client.pixel_x = client.default_pixel_x
+	client.pixel_y = client.default_pixel_y
+	A = A ? A : eyeobj
+	if (istype(A, /atom/movable))
+		client.perspective = EYE_PERSPECTIVE
+		client.eye = A
+	else if (isturf(loc))
+		client.eye = client.mob
+		client.perspective = MOB_PERSPECTIVE
+	else
+		client.perspective = EYE_PERSPECTIVE
+		client.eye = loc
 
 /mob/proc/show_inv(mob/user)
 	return
@@ -1061,7 +1060,7 @@
 /mob/physically_destroyed()
 	SHOULD_CALL_PARENT(FALSE)
 	gib()
-	
+
 /mob/explosion_act()
 	. = ..()
 	if(!blinded)
